@@ -43,9 +43,7 @@ export default function Card() {
     args: [walletClient?.account.address],
   })
 
-  const {
-    write,
-  } = useContractWrite({
+  const { write } = useContractWrite({
     address: "0xe6984300afd314A2F49A5869e773883CdfAe49C2",
     abi: abi,
     functionName: "unlockVestedTokens",
@@ -61,22 +59,27 @@ export default function Card() {
   useEffect(() => {
     if (result.data) {
       const [
-        beneficiary,
+        ,
         value,
         start,
         end,
-        duration,
+        ,
         releasedAmount,
         lastReleaseDate,
-        exist,
-        revocable,
-      ] = result.data
+        ,
+        ,
+      ]: any[] = result.data as any[]
 
       setData({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         value: value.toString(),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         start: start.toString(),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         end: end.toString(),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         releasedAmount: releasedAmount.toString(),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         lastReleaseDate: lastReleaseDate.toString(),
       })
     }
