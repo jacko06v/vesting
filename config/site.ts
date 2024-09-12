@@ -7,6 +7,12 @@ interface SiteConfig {
   emoji: string
   description: string
   localeDefault: string
+  links: {
+    docs: string
+    discord: string
+    twitter: string
+    github: string
+  }
 }
 
 
@@ -17,7 +23,12 @@ export const siteConfig: SiteConfig = {
   description:
     "Vesting dashboard",
   localeDefault: "en",
-  
+  links: {
+    docs: "https://docs.turboeth.xyz/overview",
+    discord: "https://discord.gg/",
+    twitter: "https://twitter.com/",
+    github: "https://github.com/jacko06v/vesting",
+  },
 }
 
 export const DEPLOY_URL =
