@@ -4,7 +4,6 @@ import withPWA from "next-pwa"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  basePath: "/vesting",
   output: 'export',
   reactStrictMode: true,
   images: {
