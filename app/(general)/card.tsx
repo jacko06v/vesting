@@ -72,6 +72,11 @@ interface VestingSchedule {
   status: "vested" | "pending"
 }
 
+interface PriceData {
+  date: string
+  price: number
+}
+
 interface TransactionHistory {
   date: string
   amount: number
@@ -161,20 +166,38 @@ const VestingDashboard = () => {
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const response = await fetch(
+        // Fetch current price
+        const currentPriceResponse = await fetch(
           "https://api.coingecko.com/api/v3/simple/price?ids=ovr&vs_currencies=usd,eur"
         )
-        const data = await response.json()
-        setPrice(data.ovr.usd)
-        setPriceEur(data.ovr.eur)
-        generatePriceHistory(data.ovr.usd)
+        const currentPriceData = await currentPriceResponse.json()
+        setPrice(currentPriceData.ovr.usd)
+        setPriceEur(currentPriceData.ovr.eur)
+
+        // Fetch historical price data (30 days)
+        const today = Math.floor(Date.now() / 1000)
+        const thirtyDaysAgo = today - 30 * 24 * 60 * 60
+        const historicalPriceResponse = await fetch(
+          `https://api.coingecko.com/api/v3/coins/ovr/market_chart/range?vs_currency=usd&from=${thirtyDaysAgo}&to=${today}`
+        )
+        const historicalData = await historicalPriceResponse.json()
+
+        // Format historical data
+        const formattedPriceHistory: PriceData[] = historicalData.prices.map(
+          ([timestamp, price]: [number, number]) => ({
+            date: new Date(timestamp).toLocaleDateString(),
+            price: price,
+          })
+        )
+
+        setPriceHistory(formattedPriceHistory)
       } catch (error) {
         console.error("Error fetching price:", error)
       }
     }
 
     fetchPrice()
-    const interval = setInterval(fetchPrice, 60000)
+    const interval = setInterval(fetchPrice, 60000) // Update every minute
     return () => clearInterval(interval)
   }, [])
 
@@ -596,13 +619,15 @@ const VestingDashboard = () => {
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
+                        minTickGap={60}
                       />
                       <YAxis
                         stroke="#888888"
                         fontSize={12}
                         tickLine={false}
                         axisLine={false}
-                        tickFormatter={(value) => `$${value}`}
+                        tickFormatter={(value) => `$${value.toFixed(4)}`}
+                        domain={["auto", "auto"]}
                       />
                       <Tooltip
                         contentStyle={{
@@ -610,15 +635,36 @@ const VestingDashboard = () => {
                           border: "1px solid rgba(75, 85, 99, 0.3)",
                           borderRadius: "6px",
                         }}
+                        formatter={(value: number) => [
+                          `$${value.toFixed(4)}`,
+                          "Price",
+                        ]}
                       />
                       <Line
                         type="monotone"
                         dataKey="price"
                         stroke="#4ade80"
                         strokeWidth={2}
+                        dot={false}
                       />
                     </LineChart>
                   </ResponsiveContainer>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-400">Lowest Price (30d)</p>
+                    <p className="text-sm font-medium text-white">
+                      $
+                      {Math.min(...priceHistory.map((d) => d.price)).toFixed(4)}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-400">Highest Price (30d)</p>
+                    <p className="text-sm font-medium text-white">
+                      $
+                      {Math.max(...priceHistory.map((d) => d.price)).toFixed(4)}
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
