@@ -19,9 +19,9 @@ export default function RootProvider({ children }: RootProviderProps) {
   return isMounted ? (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
+      defaultTheme="dark"
+      enableSystem={false} // Disabilita il tema di sistema
+      forcedTheme="dark" // Forza il tema scuro
     >
       <QueryClientProvider client={queryClient}>
         <RWBProvider>
