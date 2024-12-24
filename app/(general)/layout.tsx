@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { NetworkStatus } from "@/components/blockchain/network-status"
 import MainNav from "@/components/layout/main-nav"
+import { SiteHeader } from "@/components/layout/site-header"
 
 interface RootLayoutProps {
   children: ReactNode
@@ -42,16 +43,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <div className="container flex h-16 items-center justify-between">
             <MainNav />
             <div className="flex items-center gap-4">
-              <Button
-                onClick={() => connect()}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white transition-all hover:from-purple-700 hover:to-pink-700"
-                size="sm"
-              >
-                <Wallet className="mr-2 h-4 w-4" />
-                {isConnected
-                  ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
-                  : "Connect Wallet"}
-              </Button>
+              <SiteHeader />
               {/* <NetworkStatus /> */}
             </div>
           </div>

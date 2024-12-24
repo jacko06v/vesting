@@ -1,5 +1,8 @@
 import { HTMLAttributes } from "react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
+import { AlertCircle, Wallet } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
 
 interface WalletConnectCustomProps extends HTMLAttributes<HTMLDivElement> {
   classNameConnect?: string
@@ -30,8 +33,8 @@ export const WalletConnectCustom = ({
           account &&
           chain &&
           (!authenticationStatus || authenticationStatus === "authenticated")
-
         const ready = mounted && authenticationStatus !== "loading"
+
         return (
           <div
             {...(!ready && {
@@ -46,70 +49,72 @@ export const WalletConnectCustom = ({
             {(() => {
               if (!connected) {
                 return (
-                  <button onClick={openConnectModal} type="button">
+                  <Button
+                    onClick={openConnectModal}
+                    size="sm"
+                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-xs hover:from-purple-700 hover:to-pink-700"
+                  >
+                    <Wallet className="mr-1.5 h-3.5 w-3.5" />
                     Connect Wallet
-                  </button>
+                  </Button>
                 )
               }
 
               if (chain.unsupported) {
                 return (
-                  <button onClick={openChainModal} type="button">
-                    Wrong network
-                  </button>
+                  <Button
+                    onClick={openChainModal}
+                    variant="destructive"
+                    size="sm"
+                    className="bg-red-600 text-xs hover:bg-red-700"
+                  >
+                    <AlertCircle className="mr-1.5 h-3.5 w-3.5" />
+                    Wrong Network
+                  </Button>
                 )
               }
 
               return (
-                <div style={{ display: "flex", gap: 12, fontWeight: 700 }}>
-                  <button
+                <div className="flex items-center gap-1.5">
+                  {/* Network button */}
+                  <Button
                     onClick={openChainModal}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      backgroundColor: "#1A1B1F",
-                      padding: "10px",
-                      borderRadius: "10px",
-                    }}
-                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-8 border-gray-800 bg-gray-900/50 p-0 hover:bg-gray-900"
                   >
                     {chain.hasIcon && (
                       <div
-                        style={{
-                          background: chain.iconBackground,
-                          width: 22,
-                          height: 22,
-                          borderRadius: 999,
-                          overflow: "hidden",
-                        }}
+                        className="h-4 w-4 overflow-hidden rounded-full"
+                        style={{ background: chain.iconBackground }}
                       >
                         {chain.iconUrl && (
                           <img
                             alt={chain.name ?? "Chain icon"}
                             src={chain.iconUrl}
-                            style={{ width: 22, height: 22 }}
+                            className="h-4 w-4"
                           />
                         )}
                       </div>
                     )}
-                  </button>
+                  </Button>
 
-                  <button
+                  {/* Address and balance button */}
+                  <Button
                     onClick={openAccountModal}
-                    type="button"
-                    style={{
-                      backgroundColor: "#1A1B1F",
-                      padding: "10px",
-                      borderRadius: "10px",
-                    }}
+                    variant="outline"
+                    size="sm"
+                    className="h-8 border-gray-800 bg-gray-900/50 px-3 hover:bg-gray-900"
                   >
-                    <div style={{ display: "flex" }}>
-                      <div style={{ marginRight: "15px" }}>
+                    <div className="flex items-center whitespace-nowrap">
+                      <span className="mr-2 text-xs text-gray-400">
                         {account.displayBalance}
-                      </div>
-                      {account.displayName}
+                      </span>
+                      <span className="truncate text-xs font-medium">
+                        {account.displayName}
+                      </span>
                     </div>
-                  </button>
+                  </Button>
                 </div>
               )
             })()}
