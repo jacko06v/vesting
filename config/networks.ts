@@ -1,6 +1,3 @@
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Networks
-// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 import { env } from "@/env.mjs"
 import { Chain, ChainProviderFn, configureChains } from "wagmi"
 import {
@@ -13,11 +10,13 @@ import {
 import { alchemyProvider } from "wagmi/providers/alchemy"
 import { infuraProvider } from "wagmi/providers/infura"
 import { publicProvider } from "wagmi/providers/public"
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc"
 
 const goerli = {
   ...goerliNoIcon,
   iconUrl: "/icons/NetworkEthereumTest.svg",
 }
+
 const sepolia = {
   ...sepoliaNoIcon,
   iconUrl: "/icons/NetworkEthereumTest.svg",
@@ -26,6 +25,7 @@ const sepolia = {
 export const ETH_CHAINS_TEST = [goerli, sepolia, polygonMumbai]
 
 export const ETH_CHAINS_PROD = [mainnet, polygon]
+
 export const ETH_CHAINS_DEV =
   env.NEXT_PUBLIC_PROD_NETWORKS_DEV === "true"
     ? [...ETH_CHAINS_PROD, ...ETH_CHAINS_TEST]
@@ -34,7 +34,21 @@ export const ETH_CHAINS_DEV =
 export const CHAINS: Chain[] =
   process.env.NODE_ENV === "production" ? ETH_CHAINS_PROD : ETH_CHAINS_DEV
 
-const PROVIDERS: ChainProviderFn<Chain>[] = []
+const PROVIDERS: ChainProviderFn<Chain>[] = [
+  // LlamaRPC come provider principale
+  jsonRpcProvider({
+    rpc: (chain) => {
+      if (chain.id === mainnet.id) {
+        return { 
+          http: 'https://eth.llamarpc.com',
+          webSocket: 'wss://eth.llamarpc.com'
+        }
+      }
+      // Per gli altri network usa null e passerà al provider successivo
+      return null
+    },
+  })
+]
 
 if (env.NEXT_PUBLIC_ALCHEMY_API_KEY) {
   if (!env.NEXT_PUBLIC_ALCHEMY_API_KEY)

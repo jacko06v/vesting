@@ -7,6 +7,7 @@ const nextConfig = {
   output: 'export',
   reactStrictMode: true,
   images: {
+    unoptimized: true,
     domains: [
       "avatars.githubusercontent.com",
       "app.aave.com",
